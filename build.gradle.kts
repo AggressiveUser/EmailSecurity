@@ -24,7 +24,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveBaseName.set("PanaceaEmailSecurity")
+        archiveBaseName.set("EmailSecurity")
         archiveVersion.set("1.0.0")
         archiveClassifier.set("")
     }
