@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
+
 
 /**
  * SpoofProofExtension is a Burp Suite extension that checks DMARC, SPF, and DKIM records for a given domain.
@@ -26,10 +25,8 @@ import javax.swing.text.html.StyleSheet;
 public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFactory {
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
-    private PrintWriter stdout;
     private PrintWriter stderr; // For error logging
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private JTabbedPane tabbedPane;
     private JTable table;
     private JTextField domainInput;
 
@@ -45,7 +42,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
-        this.stdout = new PrintWriter(callbacks.getStdout(), true);
+        PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
         this.stderr = new PrintWriter(callbacks.getStderr(), true);
 
         callbacks.setExtensionName("SpoofProof"); // Updated Name
@@ -58,10 +55,6 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
 
         stdout.println("SpoofProof extension initialized successfully."); // Updated Log
         stdout.println("Created by Chetanya Sharma aka AggressiveUser.");
-        stdout.println("GitHUB: https://github.com/AggressiveUser/");
-        stdout.println("LinkedIn: https://www.linkedin.com/in/aggressiveuser/");
-        stdout.println("X (Twitter): https://twitter.com/AggressiveUserX");
-
     }
 
     /**
@@ -71,7 +64,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
      */
     private JPanel setupUI() {
         JPanel mainPanel = new JPanel(new BorderLayout());
-        tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
         // ------------------------------
         // Domain Scan Panel
@@ -88,17 +81,17 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
                     executorService.submit(() -> checkDomain(domain, null));
                 } else {
                     callbacks.printOutput("Invalid domain format entered: " + domain);
-                    SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(null, "Invalid domain format. Please enter a valid domain.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    });
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Invalid domain format. Please enter a valid domain.", "Input Error", JOptionPane.ERROR_MESSAGE));
                 }
             } else {
                 callbacks.printOutput("Please enter a valid domain.");
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(null, "Please enter a valid domain.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                });
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Please enter a valid domain.", "Input Error", JOptionPane.ERROR_MESSAGE));
             }
         });
+
+        // Set button color to orange and text color to white
+        scanButton.setBackground(new Color(255, 165, 0)); // Orange color
+        scanButton.setForeground(Color.WHITE); // White text color for contrast
 
         domainScanPanel.add(new JLabel("Enter Domain:"));
         domainScanPanel.add(domainInput);
@@ -142,6 +135,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // Center align the "Record Type" column
 
+
         JScrollPane tableScrollPane = new JScrollPane(table);
         tabbedPane.addTab("Records", tableScrollPane);
 
@@ -150,7 +144,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         // ------------------------------
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.Y_AXIS));
-        aboutPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Reduced padding
+        aboutPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding around the panel
         aboutPanel.setBackground(new Color(249, 249, 249)); // Equivalent to #f9f9f9
 
         // Logo and Title Panel
@@ -168,7 +162,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
             Image img = logoIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
             logoIcon = new ImageIcon(img);
             logoLabel.setIcon(logoIcon);
-            logoLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // Reduced right margin
+            logoLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20)); // Right margin
         } else {
             callbacks.printError("Logo image not found at /images/logo.png");
         }
@@ -187,13 +181,13 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         creatorLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         creatorLabel.setForeground(new Color(102, 102, 102)); // #666666
         creatorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        creatorLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); // Reduced top margin
+        creatorLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0)); // Top margin
 
-        JLabel versionLabel = new JLabel("Version 1.1 | © 2024");
+        JLabel versionLabel = new JLabel("Version 1.0 | © 2024");
         versionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         versionLabel.setForeground(new Color(102, 102, 102)); // #666666
         versionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        versionLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0)); // Reduced top margin
+        versionLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0)); // Top margin
 
         titleInfoPanel.add(titleLabel);
         titleInfoPanel.add(creatorLabel);
@@ -202,27 +196,21 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         logoTitlePanel.add(logoLabel);
         logoTitlePanel.add(titleInfoPanel);
 
-        // Create an HTMLEditorKit and modify its StyleSheet
-        HTMLEditorKit kit = new HTMLEditorKit();
-        StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body {font-family: Arial; font-size: 12px; color: #333333;}");
-        styleSheet.addRule("a {color: #0000EE; text-decoration: underline;}");
-
         // Description Text using JEditorPane
         JEditorPane descriptionText = new JEditorPane();
         descriptionText.setContentType("text/html");
         descriptionText.setEditable(false);
         descriptionText.setOpaque(false);
-        descriptionText.setEditorKit(kit);
+       // descriptionText.setEditorKit(kit);
         descriptionText.setText(
                 "<html>"
                         + "<body style='margin: 0; padding: 0; text-align: left;'>"
-                        + "<h3 style='margin: 0; padding: 0; font-family: Arial; font-size: 14px; font-weight: bold;'>Description</h3>"
+                        + "<h3 style='margin: 0; padding: 0; font-family: Arial; font-size: 14px; font-weight: bold; color: #FFA500;'>Description</h3>"
                         + "<p style='margin: 0; padding: 0; font-size: 11px;'>SpoofProof is a user-friendly Burp Suite extension designed to analyze email security configurations.</p>"
                         + "<p style='margin: 0; padding: 0; font-size: 11px;'>It performs checks on DMARC, SPF, and DKIM records to enhance email authentication and protect against domain spoofing.</p>"
                         + "<p style='margin: 0; padding: 0; font-size: 11px;'>This tool is essential for security professionals aiming to secure email domains from unauthorized use.</p>"
                         + "<p style='margin: 10px 0 0 0; font-weight: bold;'>Third-Party Libraries</p>"
-                        + "<p style='margin: 0; font-size: 8px;'>"
+                        + "<p style='margin: 0; font-size: 7px;'>"
                         + "This extension uses the <a href='https://www.dnsjava.org/'>dnsjava</a> library, licensed under the BSD 3-Clause License, "
                         + "ensuring compatibility and flexibility for users uploading it to Burp Suite."
                         + "</p>"
@@ -230,11 +218,13 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
                         + "</html>"
         );
         descriptionText.setAlignmentX(Component.LEFT_ALIGNMENT);
+        //descriptionText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0)); // Bottom margin
 
 
+
+        // Add all components to the About Panel
         aboutPanel.add(logoTitlePanel);
         aboutPanel.add(descriptionText);
-        aboutPanel.add(Box.createRigidArea(new Dimension(0, 5)));  // Add small gap before the warning label
 
         // Wrap the About Panel in a JScrollPane
         JScrollPane aboutScroll = new JScrollPane(aboutPanel);
@@ -264,24 +254,18 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
                     } else {
                         allValid = false;
                         callbacks.printOutput("Invalid DNS server IP entered: " + trimmedServer);
-                        SwingUtilities.invokeLater(() -> {
-                            JOptionPane.showMessageDialog(null, "Invalid DNS server IP: " + trimmedServer, "Input Error", JOptionPane.ERROR_MESSAGE);
-                        });
+                        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Invalid DNS server IP: " + trimmedServer, "Input Error", JOptionPane.ERROR_MESSAGE));
                         break;
                     }
                 }
                 if (allValid) {
                     this.configuredDNSServers = dnsList.toArray(new String[0]);
                     callbacks.printOutput("DNS Settings updated to: " + dnsSettings);
-                    SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(null, "DNS Settings updated successfully.", "Settings Saved", JOptionPane.INFORMATION_MESSAGE);
-                    });
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "DNS Settings updated successfully.", "Settings Saved", JOptionPane.INFORMATION_MESSAGE));
                 }
             } else {
                 callbacks.printOutput("Please enter valid DNS server IPs.");
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(null, "Please enter valid DNS server IPs.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                });
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Please enter valid DNS server IPs.", "Input Error", JOptionPane.ERROR_MESSAGE));
             }
         });
 
@@ -298,6 +282,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         return mainPanel;
     }
+
 
     /**
      * Provides the tab caption for the Burp Suite UI.
@@ -364,9 +349,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
      */
     private void checkDomain(String domain, IHttpRequestResponse[] httpMessages) {
         // Notify user that the scan has started
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, "Scanning domain: " + domain, "Scan In Progress", JOptionPane.INFORMATION_MESSAGE);
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Scanning domain: " + domain, "Scan In Progress", JOptionPane.INFORMATION_MESSAGE));
 
         callbacks.printOutput("Starting checks for domain: " + domain);
 
@@ -401,8 +384,8 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         try {
             URI issueURI = new URI("http", domain, "/", null);
             URL issueURL = issueURI.toURL();
-            IHttpService httpService = null;
-            IHttpRequestResponse[] messages = null;
+            IHttpService httpService;
+            IHttpRequestResponse[] messages;
 
             if (httpMessages != null && httpMessages.length > 0) {
                 httpService = httpMessages[0].getHttpService();
@@ -423,32 +406,27 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
                     httpService,
                     issueURL,
                     messages,
-                    "SpoofProof Check for " + sanitizeForHTML(domain), // Updated Issue Name
+                    "SpoofProof Security Check for " + sanitizeForHTML(domain), // Updated Issue Name
                     issueDetail, // HTML-formatted detail including domain
                     "Information",
                     "Certain",
                     "Update DNS records to ensure DMARC, SPF, and DKIM are configured correctly.",
                     "DMARC, SPF, and DKIM checks for email security.",
                     "To enhance email security, set DMARC policies to “reject” to block unauthorized emails, and regularly update SPF records to include only approved mail servers. Use DKIM with a minimum key length of 2048 bits for all outgoing emails.\n" +
-                            "Monitor DMARC reports to detect unauthorized use and regularly audit DMARC, SPF, and DKIM settings for compliance.",
-                    "DMARC: https://dmarc.org, SPF: https://www.openspf.org, DKIM: https://www.dkim.org"
+                            "Monitor DMARC reports to detect unauthorized use and regularly audit DMARC, SPF, and DKIM settings for compliance."
             );
 
             callbacks.printOutput("Adding issue to Burp's Issues tab for domain: " + domain);
             callbacks.addScanIssue(issue);
 
             // Notify user that the scan has completed successfully
-            SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null, "Scan completed for domain: " + domain, "Scan Complete", JOptionPane.INFORMATION_MESSAGE);
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Scan completed for domain: " + domain, "Scan Complete", JOptionPane.INFORMATION_MESSAGE));
         } catch (Exception e) {
             callbacks.printError("Error creating issue for domain " + domain + ": " + e.getMessage());
             e.printStackTrace(stderr); // Log the stack trace to stderr
 
             // Notify user of the error during the scan
-            SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null, "Error scanning domain: " + domain + "\n" + e.getMessage(), "Scan Error", JOptionPane.ERROR_MESSAGE);
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error scanning domain: " + domain + "\n" + e.getMessage(), "Scan Error", JOptionPane.ERROR_MESSAGE));
         }
     }
 
@@ -547,8 +525,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
             Record[] records = lookup.run();
             if (records != null && lookup.getResult() == Lookup.SUCCESSFUL) {
                 for (Record record : records) {
-                    if (record instanceof TXTRecord) {
-                        TXTRecord txt = (TXTRecord) record;
+                    if (record instanceof TXTRecord txt) {
                         StringBuilder txtDataBuilder = new StringBuilder();
                         for (Object obj : txt.getStrings()) {
                             txtDataBuilder.append(obj.toString());
@@ -636,15 +613,15 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         boolean dkimValid = dkim != null;
 
         if (!dmarcReject && (spfSoftFail || !spfFail) && !dkimValid) {
-            return "High Risk: " + domain + " is vulnerable to spoofing due to inadequate or absent DMARC, SPF, and DKIM configurations.";
+            return "High Risk:  " + domain + " is vulnerable to spoofing due to inadequate or absent DMARC, SPF, and DKIM configurations.";
         }
         if (dmarcReject && spfFail && dkimValid) {
-            return "Secure: Domain " + domain + " is protected against spoofing.";
+            return "Secure:  " + domain + " is protected against spoofing.";
         }
         if (dmarcReject && (spfFail || spfSoftFail) && dkimValid) {
-            return "Moderate Risk: Domain " + domain + " has partial protection against spoofing. Consider strengthening DMARC and SPF.";
+            return "Moderate Risk:  " + domain + " has partial protection against spoofing. Consider strengthening DMARC and SPF.";
         }
-        return "Moderate Risk: Domain " + domain + " has partial protection against spoofing. Consider strengthening DMARC, SPF, and DKIM.";
+        return "Moderate Risk:  " + domain + " has partial protection against spoofing. Consider strengthening DMARC, SPF, and DKIM.";
     }
 
     /**
@@ -667,9 +644,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
                     executorService.submit(() -> checkDomain(host, selectedItems));
                 } else {
                     callbacks.printOutput("Invalid domain format selected: " + host);
-                    SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(null, "Selected URL has an invalid domain: " + host, "Input Error", JOptionPane.ERROR_MESSAGE);
-                    });
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Selected URL has an invalid domain: " + host, "Input Error", JOptionPane.ERROR_MESSAGE));
                 }
             }
         });
@@ -692,7 +667,6 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         private final String remediation;
         private final String background;
         private final String classification;
-        private final String reference;
 
         /**
          * Constructor for CustomScanIssue.
@@ -707,11 +681,10 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
          * @param remediation    Remediation advice
          * @param background     Background information
          * @param classification Classification details
-         * @param reference      References or external links
          */
         public CustomScanIssue(IHttpService httpService, URL url, IHttpRequestResponse[] httpMessages, String name,
                                String detail, String severity, String confidence, String remediation, String background,
-                               String classification, String reference) {
+                               String classification) {
             this.httpService = httpService;
             this.url = url;
             this.httpMessages = httpMessages;
@@ -722,7 +695,6 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
             this.remediation = remediation;
             this.background = background;
             this.classification = classification;
-            this.reference = reference;
         }
 
         @Override
@@ -812,6 +784,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         public int getPort() {
             return url.getPort() == -1 ? (getProtocol().equals("https") ? 443 : 80) : url.getPort();
         }
+
     }
 
     /**
@@ -905,12 +878,4 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         }
     }
 
-    /**
-     * Handles extension unload event by shutting down the executor service and logging.
-     */
-    //@Override
-    public void extensionUnloaded() {
-        executorService.shutdownNow();
-        callbacks.printOutput("SpoofProof extension unloaded."); // Updated Log
-    }
 }
