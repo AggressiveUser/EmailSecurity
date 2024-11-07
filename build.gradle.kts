@@ -3,9 +3,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "com.panaceainfosec"
+group = "com.infosec"
 version = "1.0-Release"
-val projectName = "PanaceaEmailSecurity" // Set the project name here
+val projectName = "EmailSecurity" // Set the project name here
 
 repositories {
     mavenCentral()

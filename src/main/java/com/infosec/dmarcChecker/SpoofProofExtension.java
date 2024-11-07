@@ -1,4 +1,4 @@
-package com.panaceainfosec.dmarcChecker;
+package com.infosec.dmarcChecker;
 
 import burp.*;
 import org.xbill.DNS.Record;
