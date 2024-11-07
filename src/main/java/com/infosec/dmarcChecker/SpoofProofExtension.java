@@ -66,9 +66,6 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         JPanel mainPanel = new JPanel(new BorderLayout());
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
-        // ------------------------------
-        // Domain Scan Panel
-        // ------------------------------
         JPanel domainScanPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Align components to left
         domainInput = new JTextField(30);
         JButton scanButton = new JButton("Domain Scan");
@@ -99,9 +96,6 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
 
         mainPanel.add(domainScanPanel, BorderLayout.NORTH);
 
-        // ------------------------------
-        // Records Table Setup
-        // ------------------------------
         String[] columnNames = {"Record Type", "Record Data", "Recommendation"};
         Object[][] data = {{"DMARC", "", ""}, {"SPF", "", ""}, {"DKIM", "", ""}, {"Final Verdict", "", ""}};
         table = new JTable(data, columnNames) {
@@ -139,9 +133,6 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
         JScrollPane tableScrollPane = new JScrollPane(table);
         tabbedPane.addTab("Records", tableScrollPane);
 
-        // ------------------------------
-        // About Tab Setup Using Individual JLabels
-        // ------------------------------
         JPanel aboutPanel = new JPanel();
         aboutPanel.setLayout(new BoxLayout(aboutPanel, BoxLayout.Y_AXIS));
         aboutPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Padding around the panel
@@ -275,9 +266,7 @@ public class SpoofProofExtension implements IBurpExtender, ITab, IContextMenuFac
 
         tabbedPane.addTab("Settings", settingsPanel);
 
-        // ------------------------------
-        // Final Integration
-        // ------------------------------
+
         tabbedPane.setSelectedIndex(0); // Default to "Records" tab
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         return mainPanel;
